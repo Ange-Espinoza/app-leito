@@ -18,7 +18,7 @@ function progresoHoy(today) {
   return { llevas, resta, pct: Math.round((llevas / dur) * 100) };
 }
 
-export default function Semana({ nombre, storeName, periodo, vista, onDayTap, onShare, onVerFoto, compartiendo }) {
+export default function Semana({ nombre, storeName, periodo, vista, onDayTap, onShare, compartiendo }) {
   const today = vista.today;
   const prog = progresoHoy(today);
 
@@ -117,8 +117,6 @@ export default function Semana({ nombre, storeName, periodo, vista, onDayTap, on
         <button type="button" className="al-send-btn" onClick={onShare} disabled={compartiendo}>
           {compartiendo ? "Enviando…" : `Mandarle mi semana a mi amorcito`}
         </button>
-        <button type="button" className="al-link-center" onClick={onVerFoto}>Ver la planilla original</button>
-        <div className="al-foot-note">Los turnos salen de una foto: si algo no calza, la planilla manda.</div>
       </div>
     </div>
   );
