@@ -38,8 +38,6 @@ export default function AppLeito() {
 
   const [toast, setToast] = useState("");
   const [compartiendo, setCompartiendo] = useState(false);
-  const [verFoto, setVerFoto] = useState(false);
-  const [confirmarFotoNueva, setConfirmarFotoNueva] = useState(false);
 
   const timers = useRef([]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -204,7 +202,9 @@ export default function AppLeito() {
 
   if (!listo) return null;
 
-  if (pantalla === "inicio") {
+  // True first run (nothing saved yet): full-screen takeover, no tab bar to
+  // navigate back to since there's no other screen yet.
+  if (pantalla === "inicio" && !week) {
     return <Inicio nombre={prefs.nombre} searchName={prefs.searchName} storeName={prefs.storeName} onArchivo={onArchivo} />;
   }
 
@@ -224,7 +224,9 @@ export default function AppLeito() {
     );
   }
 
-  // semana / crew / ajustes share the tab bar + day sheet + toast
+  // semana / crew / ajustes / inicio(actualizar) all share the tab bar, day
+  // sheet, and toast — visiting "Foto" here never touches saved data, it
+  // only changes once a new photo is actually picked and scanned.
   return (
     <>
       {pantalla === "semana" && vista && (
@@ -236,18 +238,20 @@ export default function AppLeito() {
           onDayTap={(i) => { setOpenDay(i); setEditing(false); setDraft(null); }}
           onShare={compartir}
           compartiendo={compartiendo}
-          onVerFoto={() => (imagen ? setVerFoto(true) : flash("Sube la foto de nuevo para verla otra vez"))}
         />
       )}
       {pantalla === "crew" && vista && <Crew storeName={prefs.storeName} vista={vista} />}
       {pantalla === "ajustes" && (
         <Ajustes prefs={prefs} onChange={cambiarPrefs} onReset={resetTodo} tieneSemana={!!week} />
       )}
+      {pantalla === "inicio" && week && (
+        <Inicio nombre={prefs.nombre} searchName={prefs.searchName} storeName={prefs.storeName} onArchivo={onArchivo} actualizando />
+      )}
 
       <TabBar
         active={pantalla}
         onChange={setPantalla}
-        onScan={() => (week ? setConfirmarFotoNueva(true) : setPantalla("inicio"))}
+        onScan={() => setPantalla("inicio")}
         nombre={prefs.nombre}
       />
 
@@ -263,40 +267,6 @@ export default function AppLeito() {
           reminderOn={!!reminders[openDay]}
           onToggleReminder={() => setReminders((r) => ({ ...r, [openDay]: !r[openDay] }))}
         />
-      )}
-
-      {confirmarFotoNueva && (
-        <div className="al-sheet-overlay">
-          <div className="al-sheet-backdrop" onClick={() => setConfirmarFotoNueva(false)} />
-          <div className="al-sheet-panel">
-            <div className="al-sheet-handle" />
-            <div className="al-sheet-title">¿Subir una foto nueva?</div>
-            <div className="al-sheet-store" style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5 }}>
-              Ya tienes guardada la semana {ficha?.periodo ? `del ${ficha.periodo}` : "actual"}. Si subes otra foto, esta se reemplaza por la nueva.
-            </div>
-            <div className="al-sheet-actions">
-              <button type="button" className="al-sheet-btn-close" onClick={() => setConfirmarFotoNueva(false)}>Cancelar</button>
-              <button
-                type="button"
-                className="al-sheet-btn-save"
-                onClick={() => { setConfirmarFotoNueva(false); setPantalla("inicio"); }}
-              >
-                Subir foto nueva
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {verFoto && imagen && (
-        <div className="al-sheet-overlay" onClick={() => setVerFoto(false)}>
-          <div className="al-sheet-backdrop" />
-          <img
-            src={imagen.preview}
-            alt="Planilla original"
-            style={{ position: "relative", zIndex: 1, maxWidth: "92%", maxHeight: "80vh", margin: "10vh auto", display: "block", borderRadius: 12, boxShadow: "0 20px 50px rgba(0,0,0,.4)" }}
-          />
-        </div>
       )}
 
       <Toast mensaje={toast} />
