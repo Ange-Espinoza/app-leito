@@ -3,7 +3,7 @@
 // Google's Gemini vision model — free tier, no credit card — and hand back
 // the raw text reply.
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "gemini-flash-latest";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 export async function POST(request) {
