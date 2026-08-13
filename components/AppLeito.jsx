@@ -39,6 +39,7 @@ export default function AppLeito() {
   const [toast, setToast] = useState("");
   const [compartiendo, setCompartiendo] = useState(false);
   const [verFoto, setVerFoto] = useState(false);
+  const [confirmarFotoNueva, setConfirmarFotoNueva] = useState(false);
 
   const timers = useRef([]);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -246,7 +247,7 @@ export default function AppLeito() {
       <TabBar
         active={pantalla}
         onChange={setPantalla}
-        onScan={() => setPantalla("inicio")}
+        onScan={() => (week ? setConfirmarFotoNueva(true) : setPantalla("inicio"))}
         nombre={prefs.nombre}
       />
 
@@ -262,6 +263,29 @@ export default function AppLeito() {
           reminderOn={!!reminders[openDay]}
           onToggleReminder={() => setReminders((r) => ({ ...r, [openDay]: !r[openDay] }))}
         />
+      )}
+
+      {confirmarFotoNueva && (
+        <div className="al-sheet-overlay">
+          <div className="al-sheet-backdrop" onClick={() => setConfirmarFotoNueva(false)} />
+          <div className="al-sheet-panel">
+            <div className="al-sheet-handle" />
+            <div className="al-sheet-title">¿Subir una foto nueva?</div>
+            <div className="al-sheet-store" style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5 }}>
+              Ya tienes guardada la semana {ficha?.periodo ? `del ${ficha.periodo}` : "actual"}. Si subes otra foto, esta se reemplaza por la nueva.
+            </div>
+            <div className="al-sheet-actions">
+              <button type="button" className="al-sheet-btn-close" onClick={() => setConfirmarFotoNueva(false)}>Cancelar</button>
+              <button
+                type="button"
+                className="al-sheet-btn-save"
+                onClick={() => { setConfirmarFotoNueva(false); setPantalla("inicio"); }}
+              >
+                Subir foto nueva
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {verFoto && imagen && (
