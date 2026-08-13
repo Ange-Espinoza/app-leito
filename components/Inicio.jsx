@@ -6,7 +6,6 @@ const HOY_LARGO = new Intl.DateTimeFormat("es-CL", { weekday: "long", day: "nume
 
 export default function Inicio({ nombre, searchName, storeName, onArchivo, error }) {
   const fileRef = useRef(null);
-  const cameraRef = useRef(null);
 
   function elegir(e) {
     const f = e.target.files && e.target.files[0];
@@ -28,11 +27,7 @@ export default function Inicio({ nombre, searchName, storeName, onArchivo, error
           <button type="button" className="al-btn-primary" onClick={() => fileRef.current?.click()}>
             Subir la foto del horario
           </button>
-          <button type="button" className="al-btn-secondary" onClick={() => cameraRef.current?.click()}>
-            Tomarle una foto ahora
-          </button>
           <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={elegir} />
-          <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={elegir} />
         </div>
         {error && (
           <div className="al-scan-error" style={{ marginBottom: 20 }}>
